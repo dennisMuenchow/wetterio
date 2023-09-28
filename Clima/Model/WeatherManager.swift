@@ -21,10 +21,10 @@ struct WeatherManager {
     // URL mit GPS-Daten
     func fetchWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
         let urlString = "\(weatherURL)&lat=\(latitude)&lon=\(longitude)"
-        performRequest(with: urlString)
+         performRequest(with: urlString)
     }
     
-    func performRequest(with urlString: String) {
+    func performRequest(with urlString: String)  {
         // 01:  Create URL
         if let url = URL(string: urlString) {
             
@@ -50,6 +50,7 @@ struct WeatherManager {
     
     func parseJSON(_ weatherData: Data) -> WeatherModel? {
         let decoder = JSONDecoder()
+        
         do {
             let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
             let id = decodedData.weather[0].id
@@ -64,10 +65,19 @@ struct WeatherManager {
             let humidity = decodedData.main.humidity
             let pressure = decodedData.main.pressure
             let speed = decodedData.wind.speed
-
-            
-            
-            let weather = WeatherModel(conditionId: id, cityName: name, temperature: temp, temperatureMin: tempMin, temperatureMax: tempMax, descr: description, feels_like: feels_like, sunrise: sunrise, sunset: sunset, humidity: humidity, pressure: pressure, windspeed: speed)
+                
+            let weather = WeatherModel(conditionId: id, 
+                                       cityName: name,
+                                       temperature: temp,
+                                       temperatureMin: tempMin,
+                                       temperatureMax: tempMax,
+                                       descr: description,
+                                       feels_like: feels_like,
+                                       sunrise: sunrise,
+                                       sunset: sunset,
+                                       humidity: humidity,
+                                       pressure: pressure,
+                                       windspeed: speed)
             return weather
             
         } catch {

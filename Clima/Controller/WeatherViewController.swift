@@ -5,6 +5,7 @@ import Dispatch
 
 class WeatherViewController: UIViewController, WeatherManagerDelegate, UITableViewDelegate, UITableViewDataSource  {
     
+    
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
@@ -15,14 +16,22 @@ class WeatherViewController: UIViewController, WeatherManagerDelegate, UITableVi
     @IBOutlet weak var tempMaxLabel: UILabel!
     @IBOutlet weak var View0101: UIView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var ButtonTest: UIButton!
+    
+    @IBAction func buttonPressed(_ sender: UIButton) {
+        tableView.reloadData()
+    }
+    
     
     var weather: WeatherModel?
     var weatherManager = WeatherManager()
     let locationManager = CLLocationManager()
     
     let labelArray = ["DETAILS", "GEFÜHLT", "SONNENAUFGANG", "SONNENUNTERGANG", "LUFTDRUCK", "FEUCHTIGKEIT", "WINDGESCHWINDIGKEIT"]
-    let iconArray = ["","thermometer.sun", "sunrise", "sunset", "barometer", "drop.fill", "wind"]
-    let pseudoDetails = ["", "18°", "06:39", "18:53", "1050 hPa", "48%", "4 km/h"]
+    let iconArray = ["","thermometer.sun", "sunrise", "sunset", "barometer", "drop", "wind"]
+    
+    var detailsArray: [String] = ["1","2","3","4","5","6","7"]
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,14 +55,14 @@ class WeatherViewController: UIViewController, WeatherManagerDelegate, UITableVi
         weatherManager.delegate = self
         searchTextField.delegate = self
         tableView.reloadData()
-
+        
     }
     
     @IBAction func locationPressed(_ sender: UIButton) {
         locationManager.requestLocation()
     }
     
-    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel)  {
         DispatchQueue.main.async {
             self.temperatureLabel.text = weather.temperatureString
             self.tempMinLabel.text = "\(weather.temperatureMinString)°"
@@ -64,7 +73,26 @@ class WeatherViewController: UIViewController, WeatherManagerDelegate, UITableVi
             //self.backgroundImage.image = UIImage(named: "cloud.fog")
             self.cityLabel.text = weather.cityName
             self.descriptionLabel.text = weather.descr
+            
+            var feelslikeValue = weather.feelsLikeString
+            var sunriseValue = weather.sunriseString
+            var sunsetValue = weather.sunsetString
+            var pressureValue = weather.pressureString
+            var humidityValue = weather.humidityString
+            var windspeedValue = weather.windspeedString
+            
+            self.detailsArray = ["", feelslikeValue, sunriseValue, sunsetValue, pressureValue, humidityValue, windspeedValue]
+            //self.detailsArray = ["1", "2", "3", "4", "5", "6", "7", "8", "1", "2", "3", "4", "5", "6", "7", "8", "1", "2", "3", "4", "5", "6", "7", "8"]
+            
+            
+            //print(self.feelslikeValue)
+
+            
+            //print(self.cityName2)
             self.tableView.reloadData()
+            print(self.detailsArray)
+
+            
         }
     }
     
@@ -80,31 +108,30 @@ class WeatherViewController: UIViewController, WeatherManagerDelegate, UITableVi
         return labelArray.count
     }
     
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            
-            let cell = tableView.dequeueReusableCell(withIdentifier: "feelslikeCell", for: indexPath)
-            cell.textLabel?.text = labelArray[indexPath.row]
-            cell.imageView?.image = UIImage(systemName: iconArray[indexPath.row])
-            cell.backgroundColor = UIColor.clear
-        //cell.detailTextLabel?.text = pseudoDetails[indexPath.row] // Issue: Muss auf API Ergebnisse warten, aktuell noch pseudo
-        cell.detailTextLabel?.text = weather?.cityName
-        
-            return cell
-        }
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "feelslikeCell", for: indexPath)
+        cell.textLabel?.text = labelArray[indexPath.row]
+        cell.imageView?.image = UIImage(systemName: iconArray[indexPath.row])
+        cell.backgroundColor = UIColor.clear
+        cell.detailTextLabel?.text = detailsArray[indexPath.row]
+        //print(detailsArray[0])
+        return cell
+
+    }
 }
 
 
 //MARK: - CLLocationManagerDelegate
 
 extension WeatherViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])  {
         if let location = locations.last {
             locationManager.stopUpdatingLocation()
             let lat = location.coordinate.latitude
             let lon = location.coordinate.longitude
-            weatherManager.fetchWeather(latitude: lat, longitude: lon)
+             weatherManager.fetchWeather(latitude: lat, longitude: lon)
         }
     }
     

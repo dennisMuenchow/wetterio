@@ -46,8 +46,8 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" image="wind" catalog="system" id="G8z-Uz-TUy" userLabel="icon">
-                                                    <rect key="frame" x="21.5" y="13.333333333333336" width="21" height="17"/>
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" image="drop" catalog="system" id="G8z-Uz-TUy" userLabel="icon">
+                                                    <rect key="frame" x="24.833333333333332" y="12.333333333333336" width="14.333333333333334" height="19"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
                                             </subviews>
@@ -208,10 +208,10 @@
     </scenes>
     <resources>
         <image name="cloud.fog" width="1440" height="2560"/>
+        <image name="drop" catalog="system" width="96" height="128"/>
         <image name="location.circle.fill" catalog="system" width="128" height="123"/>
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <image name="sun.max" catalog="system" width="128" height="125"/>
-        <image name="wind" catalog="system" width="128" height="103"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

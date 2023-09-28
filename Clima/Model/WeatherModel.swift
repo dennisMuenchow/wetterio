@@ -28,8 +28,9 @@ struct WeatherModel {
         return String(format: "%.0f", temperatureMax)
     }
     
-    var feels_LikeString: String {
-            return String(format: "%.0f", feels_like)
+    var feelsLikeString: String {
+        let feelslikeStringFormatted = String(format: "%.0f", feels_like)
+            return feelslikeStringFormatted + "°C"
         }
     
     var sunriseString: String {
@@ -49,16 +50,19 @@ struct WeatherModel {
     }
      
     var humidityString: String {
-        return String(format: "%.0f", humidity)
+        let humidityStringFormatted = String(format: "%.0f", humidity)
+        return humidityStringFormatted + "%"
     }
     
     var pressureString: String {
-        return String(format: "%.0f", pressure)
+        let pressureStringFormatted = String(format: "%.0f", pressure)
+        return pressureStringFormatted + " hpa"
     }
     
     // let windKmh = windspeed *1,6
-    var windString: String {
-        return String(format: "%.2f", windspeed)
+    var windspeedString: String {
+        let windspeedStringFormatted = String(format: "%.2f", windspeed)
+        return windspeedStringFormatted + " m/s"
     }
     
     func unixTimestampToTimeString(unixTimestamp: Double) -> String {
