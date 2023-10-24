@@ -3,9 +3,9 @@ import UIKit
 import CoreLocation
 import Dispatch
 
-class WeatherViewController: UIViewController, WeatherManagerDelegate, UITableViewDelegate, UITableViewDataSource  {
+class WeatherViewController: UIViewController, WeatherManagerDelegate {
     
-    
+    // Outlets für UI-Elemente
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
@@ -14,118 +14,100 @@ class WeatherViewController: UIViewController, WeatherManagerDelegate, UITableVi
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var tempMinLabel: UILabel!
     @IBOutlet weak var tempMaxLabel: UILabel!
-    @IBOutlet weak var View0101: UIView!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var ButtonTest: UIButton!
+    @IBOutlet weak var blurEffectView: UIVisualEffectView!
     
-    @IBAction func buttonPressed(_ sender: UIButton) {
-        tableView.reloadData()
-    }
-    
-    
+    // Daten- und Manager-Variablen
     var weather: WeatherModel?
     var weatherManager = WeatherManager()
     let locationManager = CLLocationManager()
     
+    // Arrays für Labels und Icons
     let labelArray = ["DETAILS", "GEFÜHLT", "SONNENAUFGANG", "SONNENUNTERGANG", "LUFTDRUCK", "FEUCHTIGKEIT", "WINDGESCHWINDIGKEIT"]
     let iconArray = ["","thermometer.sun", "sunrise", "sunset", "barometer", "drop", "wind"]
+    var detailsArray = Array(repeating: "", count: 7)
     
-    var detailsArray: [String] = ["1","2","3","4","5","6","7"]
-
+    // Funktion zum Aktivieren/Deaktivieren des Blur-Effekts
+    func toggleBlurEffect(_ isEnabled: Bool) {
+        if isEnabled {
+            let blurEffect = UIBlurEffect(style: .regular)
+            blurEffectView.effect = blurEffect
+            blurEffectView.alpha = 0.5
+        } else {
+            blurEffectView.effect = nil
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // TableView-Konfiguration
         tableView.delegate = self
         tableView.dataSource = self
         tableView.layer.cornerRadius = 20
         tableView.backgroundColor = UIColor.clear
         
-        let blurEffect = UIBlurEffect(style: .regular) // Du kannst den Stil anpassen
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        // Aktiviere den Blur-Effekt im tableView-Hintergrund
+        toggleBlurEffect(true)
         
+        let blurEffect = UIBlurEffect(style: .regular)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = tableView.bounds
         blurEffectView.alpha = 1
-        
         tableView.backgroundView = blurEffectView
         
+        // Standortverfolgung initialisieren
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
+        
+        // Delegate-Zuweisungen und Datenquelle für die Suche
         weatherManager.delegate = self
         searchTextField.delegate = self
-        tableView.reloadData()
         
+        // Aktualisierung tableView
+        tableView.reloadData()
     }
     
     @IBAction func locationPressed(_ sender: UIButton) {
         locationManager.requestLocation()
     }
     
+    // Funktionen für das WeatherManagerDelegate-Protokoll
     func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel)  {
+        
+        // Aktualisiere die UI mit den Wetterdaten
         DispatchQueue.main.async {
+    
             self.temperatureLabel.text = weather.temperatureString
             self.tempMinLabel.text = "\(weather.temperatureMinString)°"
             self.tempMaxLabel.text = "\(weather.temperatureMaxString)°"
             
             self.conditionImageView.image = UIImage(systemName: weather.conditionName)
             self.backgroundImage.image = UIImage(named: weather.conditionName)
-            //self.backgroundImage.image = UIImage(named: "cloud.fog")
             self.cityLabel.text = weather.cityName
             self.descriptionLabel.text = weather.descr
             
-            var feelslikeValue = weather.feelsLikeString
-            var sunriseValue = weather.sunriseString
-            var sunsetValue = weather.sunsetString
-            var pressureValue = weather.pressureString
-            var humidityValue = weather.humidityString
-            var windspeedValue = weather.windspeedString
-            
+            let feelslikeValue = weather.feelsLikeString
+            let sunriseValue = weather.sunriseString
+            let sunsetValue = weather.sunsetString
+            let pressureValue = weather.pressureString
+            let humidityValue = weather.humidityString
+            let windspeedValue = weather.windspeedString
             self.detailsArray = ["", feelslikeValue, sunriseValue, sunsetValue, pressureValue, humidityValue, windspeedValue]
-            //self.detailsArray = ["1", "2", "3", "4", "5", "6", "7", "8", "1", "2", "3", "4", "5", "6", "7", "8", "1", "2", "3", "4", "5", "6", "7", "8"]
-            
-            
-            //print(self.feelslikeValue)
-
-            
-            //print(self.cityName2)
             self.tableView.reloadData()
-            print(self.detailsArray)
-
-            
         }
     }
     
     func didFailWithError(error: Error) {
         print(error)
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("you tapped me")
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return labelArray.count
-    }
-    
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "feelslikeCell", for: indexPath)
-        cell.textLabel?.text = labelArray[indexPath.row]
-        cell.imageView?.image = UIImage(systemName: iconArray[indexPath.row])
-        cell.backgroundColor = UIColor.clear
-        cell.detailTextLabel?.text = detailsArray[indexPath.row]
-        //print(detailsArray[0])
-        return cell
-
-    }
 }
-
 
 //MARK: - CLLocationManagerDelegate
 
 extension WeatherViewController: CLLocationManagerDelegate {
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])  {
         if let location = locations.last {
             locationManager.stopUpdatingLocation()
@@ -142,7 +124,6 @@ extension WeatherViewController: CLLocationManagerDelegate {
 
 //MARK: - UITextFieldDelegate
 
-// UITextFieldDelegate ist ein Protokoll --> erlaubt uns, hier vorgefertige Funktionen zu nutzen
 extension WeatherViewController: UITextFieldDelegate{
     
     @IBAction func searchPressed(_ sender: UIButton) {
@@ -171,5 +152,24 @@ extension WeatherViewController: UITextFieldDelegate{
             weatherManager.fetchWeather(cityName: city)
         }
         searchTextField.text = ""
+    }
+}
+
+//MARK: - UITableView
+
+extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return labelArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "feelslikeCell", for: indexPath)
+        cell.textLabel?.text = labelArray[indexPath.row]
+        cell.imageView?.image = UIImage(systemName: iconArray[indexPath.row])
+        cell.backgroundColor = UIColor.clear
+        cell.detailTextLabel?.text = detailsArray[indexPath.row]
+        return cell
     }
 }

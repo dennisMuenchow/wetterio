@@ -2,6 +2,8 @@
 import Foundation
 import CoreLocation
 
+
+// Protokoll für die Wetterdaten-Verarbeitung
 protocol WeatherManagerDelegate {
     func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel)
     func didFailWithError(error: Error)
@@ -12,26 +14,22 @@ struct WeatherManager {
     
     var delegate: WeatherManagerDelegate?
     
-    // URL mit CityName
+    // Lädt Wetterdaten basierend auf dem Stadtnamen
     func fetchWeather(cityName: String) {
         let urlString = "\(weatherURL)&q=\(cityName)"
         performRequest(with: urlString)
     }
     
-    // URL mit GPS-Daten
+    // Lädt Wetterdaten basierend auf GPS-Daten (Breiten- und Längengrad)
     func fetchWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
         let urlString = "\(weatherURL)&lat=\(latitude)&lon=\(longitude)"
-         performRequest(with: urlString)
+        performRequest(with: urlString)
     }
     
+    // Netzwerkanfrage
     func performRequest(with urlString: String)  {
-        // 01:  Create URL
         if let url = URL(string: urlString) {
-            
-        // 02: Create URL-Session
             let session = URLSession(configuration: .default)
-            
-        // 03: Create Task --- Beispiel für Closure (Anderes Func-Format) 
             let task = session.dataTask(with: url) { (data, response, error) in
                 if error != nil {
                     self.delegate?.didFailWithError(error: error!)
@@ -43,11 +41,11 @@ struct WeatherManager {
                     }
                 }
             }
-        // 04: Start Task
             task.resume()
         }
     }
     
+    // Parst JSON-Daten und erstellt WeatherModel
     func parseJSON(_ weatherData: Data) -> WeatherModel? {
         let decoder = JSONDecoder()
         
@@ -65,8 +63,8 @@ struct WeatherManager {
             let humidity = decodedData.main.humidity
             let pressure = decodedData.main.pressure
             let speed = decodedData.wind.speed
-                
-            let weather = WeatherModel(conditionId: id, 
+            
+            let weather = WeatherModel(conditionId: id,
                                        cityName: name,
                                        temperature: temp,
                                        temperatureMin: tempMin,
@@ -85,7 +83,4 @@ struct WeatherManager {
             return nil
         }
     }
-    
 }
-
-
