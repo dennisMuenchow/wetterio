@@ -18,14 +18,14 @@ class WeatherViewController: UIViewController, WeatherManagerDelegate {
     @IBOutlet weak var blurEffectView: UIVisualEffectView!
     
     // Daten- und Manager-Variablen
-    var weather: WeatherModel?
-    var weatherManager = WeatherManager()
-    let locationManager = CLLocationManager()
+    private var weather: WeatherModel?
+    private var weatherManager = WeatherManager()
+    private let locationManager = CLLocationManager()
     
     // Arrays für Labels und Icons
-    let labelArray = ["DETAILS", "GEFÜHLT", "SONNENAUFGANG", "SONNENUNTERGANG", "LUFTDRUCK", "FEUCHTIGKEIT", "WINDGESCHWINDIGKEIT"]
-    let iconArray = ["","thermometer.sun", "sunrise", "sunset", "barometer", "drop", "wind"]
-    var detailsArray = Array(repeating: "", count: 7)
+    private let labelArray = ["DETAILS", "GEFÜHLT", "SONNENAUFGANG", "SONNENUNTERGANG", "LUFTDRUCK", "FEUCHTIGKEIT", "WINDGESCHWINDIGKEIT"]
+    private let iconArray = ["","thermometer.sun", "sunrise", "sunset", "barometer", "drop", "wind"]
+    private var detailsArray = Array(repeating: "", count: 7)
     
     // Funktion zum Aktivieren/Deaktivieren des Blur-Effekts
     func toggleBlurEffect(_ isEnabled: Bool) {
